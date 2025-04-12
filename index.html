@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Codex HUD v3</title>
+  <style>
+    body { background: #0b0f1a; color: white; font-family: monospace; padding: 20px; }
+    .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+    .badge {
+      background: #1a1f2e; border: 2px solid #3c4a5a;
+      border-radius: 10px; text-align: center; padding: 10px;
+      transition: transform 0.2s ease;
+    }
+    .badge:hover { transform: scale(1.05); border-color: #6eaaff; }
+    .badge img { width: 64px; height: 64px; cursor: pointer; }
+    .badge-name { margin-top: 5px; font-weight: bold; font-size: 0.85em; }
+    .prompt-box {
+      display: none;
+      background: #1a1f2e;
+      border: 1px solid #6eaaff;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<h1>Codex HUD: Badge Grid</h1>
+<div class="badge-grid">
+
+  <div class="badge" onclick="togglePrompt('taskmaster')">
+    <img src="badges/taskmaster.png" alt="taskmaster">
+    <div class="badge-name">Taskmaster</div>
+    <div class="prompt-box" id="prompt-taskmaster">
+      Reflection prompt for <b>Taskmaster</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('dustbuster')">
+    <img src="badges/dustbuster.png" alt="dustbuster">
+    <div class="badge-name">Dustbuster</div>
+    <div class="prompt-box" id="prompt-dustbuster">
+      Reflection prompt for <b>Dustbuster</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('supplychain')">
+    <img src="badges/supplychain.png" alt="supplychain">
+    <div class="badge-name">Supplychain</div>
+    <div class="prompt-box" id="prompt-supplychain">
+      Reflection prompt for <b>Supplychain</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('soothingspike')">
+    <img src="badges/soothingspike.png" alt="soothingspike">
+    <div class="badge-name">Soothingspike</div>
+    <div class="prompt-box" id="prompt-soothingspike">
+      Reflection prompt for <b>Soothingspike</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('fixittoken')">
+    <img src="badges/fixittoken.png" alt="fixittoken">
+    <div class="badge-name">Fixittoken</div>
+    <div class="prompt-box" id="prompt-fixittoken">
+      Reflection prompt for <b>Fixittoken</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('breathwork')">
+    <img src="badges/breathwork.png" alt="breathwork">
+    <div class="badge-name">Breathwork</div>
+    <div class="prompt-box" id="prompt-breathwork">
+      Reflection prompt for <b>Breathwork</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('noiseshield')">
+    <img src="badges/noiseshield.png" alt="noiseshield">
+    <div class="badge-name">Noiseshield</div>
+    <div class="prompt-box" id="prompt-noiseshield">
+      Reflection prompt for <b>Noiseshield</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('weightedwarrior')">
+    <img src="badges/weightedwarrior.png" alt="weightedwarrior">
+    <div class="badge-name">Weightedwarrior</div>
+    <div class="prompt-box" id="prompt-weightedwarrior">
+      Reflection prompt for <b>Weightedwarrior</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('lightslayer')">
+    <img src="badges/lightslayer.png" alt="lightslayer">
+    <div class="badge-name">Lightslayer</div>
+    <div class="prompt-box" id="prompt-lightslayer">
+      Reflection prompt for <b>Lightslayer</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('scentreset')">
+    <img src="badges/scentreset.png" alt="scentreset">
+    <div class="badge-name">Scentreset</div>
+    <div class="prompt-box" id="prompt-scentreset">
+      Reflection prompt for <b>Scentreset</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('maskdropper')">
+    <img src="badges/maskdropper.png" alt="maskdropper">
+    <div class="badge-name">Maskdropper</div>
+    <div class="prompt-box" id="prompt-maskdropper">
+      Reflection prompt for <b>Maskdropper</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('lorekeeper')">
+    <img src="badges/lorekeeper.png" alt="lorekeeper">
+    <div class="badge-name">Lorekeeper</div>
+    <div class="prompt-box" id="prompt-lorekeeper">
+      Reflection prompt for <b>Lorekeeper</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('companionhealer')">
+    <img src="badges/companionhealer.png" alt="companionhealer">
+    <div class="badge-name">Companionhealer</div>
+    <div class="prompt-box" id="prompt-companionhealer">
+      Reflection prompt for <b>Companionhealer</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('feralmerge')">
+    <img src="badges/feralmerge.png" alt="feralmerge">
+    <div class="badge-name">Feralmerge</div>
+    <div class="prompt-box" id="prompt-feralmerge">
+      Reflection prompt for <b>Feralmerge</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('identityanchor')">
+    <img src="badges/identityanchor.png" alt="identityanchor">
+    <div class="badge-name">Identityanchor</div>
+    <div class="prompt-box" id="prompt-identityanchor">
+      Reflection prompt for <b>Identityanchor</b>.
+    </div>
+  </div>
+
+  <div class="badge" onclick="togglePrompt('shadowtransfer')">
+    <img src="badges/shadowtransfer.png" alt="shadowtransfer">
+    <div class="badge-name">Shadowtransfer</div>
+    <div class="prompt-box" id="prompt-shadowtransfer">
+      Reflection prompt for <b>Shadowtransfer</b>.
+    </div>
+  </div>
+
+</div>
+<script>
+  function togglePrompt(badgeId) {
+    document.querySelectorAll('.prompt-box').forEach(box => box.style.display = 'none');
+    const prompt = document.getElementById('prompt-' + badgeId);
+    if (prompt) prompt.style.display = 'block';
+  }
+</script>
+</body>
+</html>
