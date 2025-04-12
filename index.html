@@ -48,6 +48,26 @@
       padding: 20px;
       display: none;
     }
+
+    .badge {
+      background: #1f2937;
+      border: 2px solid #374151;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .badge:hover {
+      transform: scale(1.05);
+      border-color: #6eaaff;
+    }
+
+    .badge-desc {
+      color: #9ca3af;
+      font-size: 0.75em;
+    }
   </style>
 </head>
 <body>
@@ -58,11 +78,35 @@
   </div>
 
   <div class="badge-grid" id="badgeGrid">
-    <!-- Badge tiles will go here -->
+    <div class="badge" onclick="triggerPrompt('taskmaster')">
+      <strong>Taskmaster</strong><br />
+      <span class="badge-desc">Organize your world</span>
+    </div>
+
+    <div class="badge" onclick="triggerPrompt('dustbuster')">
+      <strong>Dustbuster</strong><br />
+      <span class="badge-desc">Clear the static</span>
+    </div>
+
+    <div class="badge" onclick="triggerPrompt('feralmerge')">
+      <strong>Feral Merge</strong><br />
+      <span class="badge-desc">Honor the instinct</span>
+    </div>
   </div>
 
   <div class="prompt-panel" id="promptPanel">
     <!-- Prompt content will be injected here -->
   </div>
+
+  <script>
+    function triggerPrompt(badgeId) {
+      const promptPanel = document.getElementById("promptPanel");
+      promptPanel.innerHTML = `
+        <h2>${badgeId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h2>
+        <p>Prompt logic will go here.</p>
+      `;
+      promptPanel.style.display = "block";
+    }
+  </script>
 </body>
 </html>
