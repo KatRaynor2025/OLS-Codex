@@ -49,6 +49,15 @@
       transform: scale(1.05);
       border-color: #6eaaff;
     }
+    .badge.completed {
+      background: #264d3c;
+      border-color: #3fa76f;
+    }
+    .badge.stripped {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: #555;
+    }
     .badge-desc {
       color: #9ca3af;
       font-size: 0.75em;
@@ -83,19 +92,34 @@
   </div>
 
   <div class="badge-grid" id="badgeGrid">
-    <div class="badge" onclick="triggerPrompt('taskmaster')">
+    <div class="badge" id="taskmaster" onclick="triggerPrompt('taskmaster')">
       <strong>Taskmaster</strong><br />
       <span class="badge-desc">Organize your world</span>
     </div>
 
-    <div class="badge" onclick="triggerPrompt('dustbuster')">
+    <div class="badge" id="dustbuster" onclick="triggerPrompt('dustbuster')">
       <strong>Dustbuster</strong><br />
       <span class="badge-desc">Clear the static</span>
     </div>
 
-    <div class="badge" onclick="triggerPrompt('feralmerge')">
+    <div class="badge" id="feralmerge" onclick="triggerPrompt('feralmerge')">
       <strong>Feral Merge</strong><br />
       <span class="badge-desc">Honor the instinct</span>
+    </div>
+
+    <div class="badge" id="scentreset" onclick="triggerPrompt('scentreset')">
+      <strong>Scent Reset</strong><br />
+      <span class="badge-desc">Ground with breath or smell</span>
+    </div>
+
+    <div class="badge" id="companionhealer" onclick="triggerPrompt('companionhealer')">
+      <strong>Companion Healer</strong><br />
+      <span class="badge-desc">Care through connection</span>
+    </div>
+
+    <div class="badge" id="identityanchor" onclick="triggerPrompt('identityanchor')">
+      <strong>Identity Anchor</strong><br />
+      <span class="badge-desc">Remember who you are</span>
     </div>
   </div>
 
@@ -123,6 +147,21 @@
           title: "Feral Merge",
           text: "What does your instinct usually try to protect?",
           options: ["The body", "A younger voice", "A secret"]
+        },
+        scentreset: {
+          title: "Scent Reset",
+          text: "Which scent helps you re-center?",
+          options: ["Lavender", "Eucalyptus", "No scent—just air"]
+        },
+        companionhealer: {
+          title: "Companion Healer",
+          text: "Who are you most able to soothe?",
+          options: ["A part inside", "A partner", "A pet or child"]
+        },
+        identityanchor: {
+          title: "Identity Anchor",
+          text: "Which truth keeps you grounded?",
+          options: ["My name is still mine", "I survived this far", "My body is home"]
         }
       };
 
@@ -137,13 +176,14 @@
 
     function completePrompt(badgeId, choice) {
       completed[badgeId] = true;
+      document.getElementById(badgeId).classList.add("completed");
       xp += 100;
       updateXP();
-      document.getElementById("promptPanel").innerHTML = `<p><b>${badgeId}</b> completed. Choice: ${choice}</p>`;
+      document.getElementById("promptPanel").innerHTML = `<p><b>${badgeId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</b> completed. Choice: ${choice}</p>`;
     }
 
     function updateXP() {
-      const percent = Math.min(100, (xp / 300) * 100);
+      const percent = Math.min(100, (xp / 600) * 100);
       document.getElementById("xpBar").style.width = percent + '%';
     }
   </script>
