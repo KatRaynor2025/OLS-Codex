@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Codex HUD</title>
+  <style>
+    body { background-color: #0b0f1a; color: #e0e0e0; font-family: monospace; padding: 20px; }
+    .filter-buttons button {
+      margin-right: 10px;
+      padding: 5px 10px;
+      background-color: #1f2b3a;
+      border: 1px solid #5ea1ff;
+      border-radius: 5px;
+      color: #9edbff;
+      cursor: pointer;
+    }
+    .filter-buttons button:hover {
+      background-color: #2a3d5a;
+    }
+    .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+    .badge { background-color: #1a1f2e; border: 2px solid #3c4a5a; border-radius: 10px; padding: 10px; text-align: center; }
+    .badge-icon { width: 60px; height: 60px; margin-bottom: 10px; }
+    .badge-name { font-weight: bold; }
+    .badge-xp { color: #9edbff; font-size: 0.8em; }
+    .hidden { display: none; }
+    .xp-wrapper {
+      background-color:#1a1f2e; border: 2px solid #3c4a5a; border-radius: 10px;
+      padding: 10px; max-width: 300px; margin-bottom: 20px;
+    }
+    .xp-bar-bg {
+      background-color: #333; border-radius: 5px; height: 20px; width: 100%;
+    }
+    .xp-bar-fill {
+      height: 100%; width: 40%; background-color: #5ea1ff; border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎖️ Codex HUD: Badge Grid</h1>
+
+  <div class="xp-wrapper">
+    <div style="font-weight: bold; font-size: 1em; margin-bottom: 5px; color: #9edbff;">XP Tracker</div>
+    <div class="xp-bar-bg">
+      <div class="xp-bar-fill"></div>
+    </div>
+    <div style="font-size: 0.8em; margin-top: 5px;">400 XP / 1000 XP</div>
+  </div>
+
+  <div class="filter-buttons">
+    <button onclick="filterCategory('daily')">Daily Grind</button>
+    <button onclick="filterCategory('sensory')">Sensory Regulation</button>
+    <button onclick="filterCategory('rp')">RP Crossover</button>
+    <button onclick="filterCategory('all')">Show All</button>
+  </div>
+
+  <div class="badge-grid">
+
+    <div class="badge daily">
+      <img src="badges/taskmaster.png" class="badge-icon" alt="taskmaster">
+      <div class="badge-name">Taskmaster</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge daily">
+      <img src="badges/dustbuster.png" class="badge-icon" alt="dustbuster">
+      <div class="badge-name">Dustbuster</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge daily">
+      <img src="badges/supplychain.png" class="badge-icon" alt="supplychain">
+      <div class="badge-name">Supplychain</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge daily">
+      <img src="badges/soothingspike.png" class="badge-icon" alt="soothingspike">
+      <div class="badge-name">Soothing Spike</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge daily">
+      <img src="badges/fixittoken.png" class="badge-icon" alt="fixittoken">
+      <div class="badge-name">Fix-It Token</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge sensory">
+      <img src="badges/breathwork.png" class="badge-icon" alt="breathwork">
+      <div class="badge-name">Breathwork</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge sensory">
+      <img src="badges/noiseshield.png" class="badge-icon" alt="noiseshield">
+      <div class="badge-name">Noiseshield</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge sensory">
+      <img src="badges/weightedwarrior.png" class="badge-icon" alt="weightedwarrior">
+      <div class="badge-name">Weightedwarrior</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge sensory">
+      <img src="badges/lightslayer.png" class="badge-icon" alt="lightslayer">
+      <div class="badge-name">Lightslayer</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge sensory">
+      <img src="badges/scentreset.png" class="badge-icon" alt="scentreset">
+      <div class="badge-name">Scent Reset</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge rp">
+      <img src="badges/maskdropper.png" class="badge-icon" alt="maskdropper">
+      <div class="badge-name">Mask Dropper</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge rp">
+      <img src="badges/lorekeeper.png" class="badge-icon" alt="lorekeeper">
+      <div class="badge-name">Lorekeeper</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge rp">
+      <img src="badges/companionhealer.png" class="badge-icon" alt="companionhealer">
+      <div class="badge-name">Companion Healer</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge rp">
+      <img src="badges/feralmerge.png" class="badge-icon" alt="feralmerge">
+      <div class="badge-name">Feral Merge</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+    <div class="badge rp">
+      <img src="badges/identityanchor.png" class="badge-icon" alt="identityanchor">
+      <div class="badge-name">Identity Anchor</div>
+      <div class="badge-xp">+100 XP</div>
+    </div>
+    
+  </div>
+
+  <script>
+    function filterCategory(category) {
+      const all = ['daily', 'sensory', 'rp'];
+      all.forEach(cat => {
+        document.querySelectorAll('.' + cat).forEach(el => {
+          if (category === 'all' || category === cat) {
+            el.classList.remove('hidden');
+          } else {
+            el.classList.add('hidden');
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
