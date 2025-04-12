@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Codex HUD</title>
   <style>
     body {
@@ -22,13 +22,19 @@
       background: #2c3e50;
       border-radius: 12px;
       overflow: hidden;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
     }
     .xp-bar-fill {
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, #6eaaff, #5cd3b4);
       transition: width 0.5s ease-in-out;
+    }
+    #xpValue {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #bbb;
+      margin-bottom: 20px;
     }
     .badge-grid {
       display: grid;
@@ -58,9 +64,13 @@
       cursor: not-allowed;
       border-color: #555;
     }
-    .badge-desc {
-      color: #9ca3af;
-      font-size: 0.75em;
+    .badge.upgraded {
+      animation: glow 1.5s infinite alternate;
+      border-color: gold;
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 5px gold; }
+      to { box-shadow: 0 0 20px gold; }
     }
     .prompt-panel {
       background: #111827;
@@ -132,123 +142,94 @@
 </head>
 <body>
   <h1>Codex HUD: Badge Grid</h1>
-
-  <div class="xp-bar-container">
-    <div class="xp-bar-fill" id="xpBar"></div>
-  </div>
-
-  <div class="badge-grid" id="badgeGrid">
-    <div class="badge" id="taskmaster" onclick="triggerPrompt('taskmaster')">Taskmaster</div>
-    <div class="badge" id="dustbuster" onclick="triggerPrompt('dustbuster')">Dustbuster</div>
-    <div class="badge" id="supplychain" onclick="triggerPrompt('supplychain')">Supplychain</div>
-    <div class="badge" id="soothingspike" onclick="triggerPrompt('soothingspike')">Soothing Spike</div>
-    <div class="badge" id="fixittoken" onclick="triggerPrompt('fixittoken')">Fix-It Token</div>
-    <div class="badge" id="breathwork" onclick="triggerPrompt('breathwork')">Breathwork</div>
-    <div class="badge" id="noiseshield" onclick="triggerPrompt('noiseshield')">Noiseshield</div>
-    <div class="badge" id="weightedwarrior" onclick="triggerPrompt('weightedwarrior')">Weighted Warrior</div>
-    <div class="badge" id="lightslayer" onclick="triggerPrompt('lightslayer')">Lightslayer</div>
-    <div class="badge" id="scentreset" onclick="triggerPrompt('scentreset')">Scent Reset</div>
-    <div class="badge" id="maskdropper" onclick="triggerPrompt('maskdropper')">Mask Dropper</div>
-    <div class="badge" id="lorekeeper" onclick="triggerPrompt('lorekeeper')">Lorekeeper</div>
-    <div class="badge" id="companionhealer" onclick="triggerPrompt('companionhealer')">Companion Healer</div>
-    <div class="badge" id="feralmerge" onclick="triggerPrompt('feralmerge')">Feral Merge</div>
-    <div class="badge" id="identityanchor" onclick="triggerPrompt('identityanchor')">Identity Anchor</div>
-    <div class="badge" id="shadowtransfer" onclick="triggerPrompt('shadowtransfer')">Shadow Transfer</div>
-  </div>
-
+  <div class="xp-bar-container"><div class="xp-bar-fill" id="xpBar"></div></div>
+  <div id="xpValue">XP: 0 / 600</div>
+  <div class="badge-grid" id="badgeGrid"></div>
   <div class="prompt-panel" id="promptPanel"></div>
-
   <div class="history-log" id="historyLog">
     <h3>Memory Scroll</h3>
     <ul id="historyList"></ul>
     <div id="archivistPanel" style="display:none;"><button class="download-button" onclick="downloadLog()">📥 Export Memory Scroll</button></div>
   </div>
 
-<script>
+  <script>
     const badgeState = {
       completed: {},
       stripped: { companionhealer: true }
     };
     let xp = 0;
 
-    const quotes = {
-      taskmaster: "Discipline is choosing between what you want now and what you want most.",
-      dustbuster: "In silence, the truth surfaces.",
-      feralmerge: "Your instinct isn’t the enemy. It’s the guard dog that learned too much.",
-      scentreset: "Memory lives in scent. So does safety.",
-      companionhealer: "Healing is a two-player game.",
-      identityanchor: "Even when lost, you are not gone."
-    };
+    const badgeData = Object.entries(getPrompts());
 
-    function getTimestamp() {
-      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const badgeGrid = document.getElementById("badgeGrid");
+    badgeData.forEach(([id, badge]) => {
+      const div = document.createElement("div");
+      div.className = "badge";
+      div.id = id;
+      div.textContent = badge.title;
+      div.onclick = () => triggerPrompt(id);
+      badgeGrid.appendChild(div);
+    });
+
+    function getPrompts() {
+      const advancedUnlocked = xp >= 600;
+      return {
+        taskmaster: {
+          title: "Taskmaster",
+          text: "What type of task is hardest for you to start?",
+          options: ["Emotional labor", "Physical chores", "Appointments"],
+          branch: advancedUnlocked ? "Why do you avoid that type of task?" : null
+        },
+        dustbuster: { title: "Dustbuster", text: "What kind of sensory reset helps you most?", options: ["Silence", "Smells", "Textures"] },
+        supplychain: { title: "Supply Chain", text: "What resource are you always running out of?", options: ["Time", "Money", "Energy"] },
+        soothingspike: { title: "Soothing Spike", text: "What helps you calm down fast, even if temporary?", options: ["Touch", "Sound", "Breath"] },
+        fixittoken: { title: "Fix-It Token", text: "What’s something small you can fix right now?", options: ["Messy space", "Unsent message", "Cluttered mind"] },
+        breathwork: { title: "Breathwork", text: "How does your breath feel right now?", options: ["Shallow", "Tight", "Calm"] },
+        noiseshield: { title: "Noise Shield", text: "Which sound would soothe you most right now?", options: ["White noise", "Music", "Silence"] },
+        weightedwarrior: { title: "Weighted Warrior", text: "What helps you feel held or grounded?", options: ["Weighted blanket", "Pressure", "Warmth"] },
+        lightslayer: { title: "Lightslayer", text: "How do you adjust your space for overstimulation?", options: ["Turn off lights", "Cover face", "Leave room"] },
+        scentreset: { title: "Scent Reset", text: "Which scent helps you re-center?", options: ["Lavender", "Eucalyptus", "No scent—just air"] },
+        maskdropper: { title: "Mask Dropper", text: "When do you feel safest unmasking?", options: ["Alone", "With one person", "With my system"] },
+        lorekeeper: { title: "Lorekeeper", text: "Which memory deserves to be preserved today?", options: ["A laugh", "A truth", "A victory"] },
+        companionhealer: { title: "Companion Healer", text: "Who are you most able to soothe?", options: ["A part inside", "A partner", "A pet or child"] },
+        feralmerge: { title: "Feral Merge", text: "What does your instinct usually try to protect?", options: ["The body", "A younger voice", "A secret"] },
+        identityanchor: { title: "Identity Anchor", text: "Which truth keeps you grounded?", options: ["My name is still mine", "I survived this far", "My body is home"] },
+        shadowtransfer: { title: "Shadow Transfer", text: "What energy are you carrying that isn’t yours?", options: ["Fear", "Guilt", "Confusion"] }
+      };
     }
 
-    function renderPrompt(badgeId, prompt) {
+    function triggerPrompt(id) {
+      if (badgeState.stripped[id] || badgeState.completed[id]) return;
+      const { title, text, options, branch } = getPrompts()[id];
       const panel = document.getElementById("promptPanel");
-      const optionsHtml = prompt.options.map(option =>
-        `<button class='choice-button' onclick="completePrompt('${badgeId}', '${option}')">${option}</button>`
-      ).join('');
-      panel.innerHTML = `<h2>${prompt.title}</h2><p>${prompt.text}</p>` + optionsHtml;
+      panel.innerHTML = `<h2>${title}</h2><p>${text}</p>` +
+        options.map(opt => `<button class='choice-button' onclick="completePrompt('${id}', '${opt}')">${opt}</button>`).join('');
       panel.style.display = "block";
     }
 
-    function triggerPrompt(badgeId) {
-      if (badgeState.stripped[badgeId] || badgeState.completed[badgeId]) return;
-      const prompts = getPrompts();
-      renderPrompt(badgeId, prompts[badgeId]);
-    }
-
-    function completePrompt(badgeId, choice) {
-      badgeState.completed[badgeId] = true;
-      document.getElementById(badgeId).classList.add("completed");
+    function completePrompt(id, choice) {
+      badgeState.completed[id] = true;
+      const el = document.getElementById(id);
+      el.classList.add("completed");
       xp += 100;
       updateXP();
-      const displayName = badgeId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-      const time = getTimestamp();
-      const followup = getPrompts()[badgeId].branch ? `<p style='margin-top:12px;'>🔍 Follow-up: ${getPrompts()[badgeId].branch}</p>` : '';
-      document.getElementById("promptPanel").innerHTML = `
-        <p><b>${displayName}</b> completed at ${time}. Choice: ${choice}</p>
-        <div class='quote-box'>“${quotes[badgeId] || ''}”</div>
-        ${followup}`;
-      const history = document.getElementById("historyList");
-      const listItem = document.createElement("li");
-      listItem.textContent = `[${time}] ${displayName} → ${choice}`;
-      history.appendChild(listItem);
-      saveToStorage(`[${time}] ${displayName} → ${choice}`);
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const displayName = el.textContent;
+      document.getElementById("promptPanel").innerHTML = `<p><b>${displayName}</b> completed at ${time}. Choice: ${choice}</p>`;
+      const li = document.createElement("li");
+      li.textContent = `[${time}] ${displayName} → ${choice}`;
+      document.getElementById("historyList").appendChild(li);
+      saveToStorage(li.textContent);
     }
 
     function updateXP() {
       const percent = Math.min(100, (xp / 600) * 100);
-      document.getElementById("xpBar").style.width = percent + '%';
+      document.getElementById("xpBar").style.width = percent + "%";
+      document.getElementById("xpValue").textContent = `XP: ${xp} / 600`;
+      if (xp >= 300) document.getElementById("companionhealer")?.classList.remove("stripped");
       if (xp >= 600) {
         document.querySelectorAll(".badge.completed").forEach(b => b.classList.add("upgraded"));
       }
-      for (const id in badgeState.stripped) {
-        const badge = document.getElementById(id);
-        if (xp >= 300 && badge.classList.contains("stripped")) {
-          badge.classList.remove("stripped");
-          delete badgeState.stripped[id];
-        }
-      }
-    }
-
-    function downloadLog() {
-      const entries = document.querySelectorAll("#historyList li");
-      let logText = "Codex Memory Scroll
--------------------------
-";
-      entries.forEach(entry => {
-        logText += entry.textContent + "
-";
-      });
-      const blob = new Blob([logText], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "Codex_Memory_Scroll.txt";
-      link.click();
-      URL.revokeObjectURL(url);
     }
 
     function saveToStorage(entry) {
@@ -267,54 +248,28 @@
       });
     }
 
-    function getPrompts() {
-      const advancedUnlocked = xp >= 600;
-      return {
-        taskmaster: {
-          title: "Taskmaster",
-          text: "What type of task is hardest for you to start?",
-          options: ["Emotional labor", "Physical chores", "Appointments"],
-          branch: advancedUnlocked ? "Why do you avoid that type of task?" : null
-        },
-        dustbuster: {
-          title: "Dustbuster",
-          text: "What kind of sensory reset helps you most?",
-          options: ["Silence", "Smells", "Textures"]
-        },
-        feralmerge: {
-          title: "Feral Merge",
-          text: "What does your instinct usually try to protect?",
-          options: ["The body", "A younger voice", "A secret"]
-        },
-        scentreset: {
-          title: "Scent Reset",
-          text: "Which scent helps you re-center?",
-          options: ["Lavender", "Eucalyptus", "No scent—just air"]
-        },
-        companionhealer: {
-          title: "Companion Healer",
-          text: "Who are you most able to soothe?",
-          options: ["A part inside", "A partner", "A pet or child"]
-        },
-        identityanchor: {
-          title: "Identity Anchor",
-          text: "Which truth keeps you grounded?",
-          options: ["My name is still mine", "I survived this far", "My body is home"]
-        }
-      };
-    }
-
-    window.onload = function() {
+    window.onload = function () {
       restoreHistory();
-      const archivistPanel = document.getElementById("archivistPanel");
       if (localStorage.getItem("codex_mode") === "archivist") {
-        archivistPanel.style.display = "block";
+        document.getElementById("archivistPanel").style.display = "block";
       }
       for (const id in badgeState.stripped) {
-        const badge = document.getElementById(id);
-        if (badge) badge.classList.add("stripped");
+        const el = document.getElementById(id);
+        if (el) el.classList.add("stripped");
       }
+    };
+
+    function downloadLog() {
+      const entries = document.querySelectorAll("#historyList li");
+      const text = Array.from(entries).map(li => li.textContent).join("\n");
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Codex_Memory_Scroll.txt";
+      a.click();
+      URL.revokeObjectURL(url);
     }
-</script>
+  </script>
 </body>
 </html>
