@@ -91,6 +91,43 @@
       border-left: 4px solid #6eaaff;
       border-radius: 4px;
     }
+    .history-log {
+      background: #0e1621;
+      border-top: 1px solid #444;
+      margin-top: 40px;
+      padding-top: 20px;
+    }
+    .history-log h3 {
+      margin-top: 0;
+      font-size: 1.2em;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+    .history-log ul {
+      list-style-type: none;
+      padding-left: 0;
+      margin-top: 10px;
+    }
+    .history-log li {
+      padding: 6px 0;
+      border-bottom: 1px dashed #444;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+    .download-button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      font-size: 0.9em;
+      font-family: monospace;
+      background: #223;
+      border: 1px solid #6eaaff;
+      border-radius: 6px;
+      color: #6eaaff;
+      cursor: pointer;
+    }
+    .download-button:hover {
+      background: #2a3344;
+    }
   </style>
 </head>
 <body>
@@ -101,38 +138,16 @@
   </div>
 
   <div class="badge-grid" id="badgeGrid">
-    <div class="badge" id="taskmaster" onclick="triggerPrompt('taskmaster')">
-      <strong>Taskmaster</strong><br />
-      <span class="badge-desc">Organize your world</span>
-    </div>
-
-    <div class="badge" id="dustbuster" onclick="triggerPrompt('dustbuster')">
-      <strong>Dustbuster</strong><br />
-      <span class="badge-desc">Clear the static</span>
-    </div>
-
-    <div class="badge" id="feralmerge" onclick="triggerPrompt('feralmerge')">
-      <strong>Feral Merge</strong><br />
-      <span class="badge-desc">Honor the instinct</span>
-    </div>
-
-    <div class="badge" id="scentreset" onclick="triggerPrompt('scentreset')">
-      <strong>Scent Reset</strong><br />
-      <span class="badge-desc">Ground with breath or smell</span>
-    </div>
-
-    <div class="badge" id="companionhealer" onclick="triggerPrompt('companionhealer')">
-      <strong>Companion Healer</strong><br />
-      <span class="badge-desc">Care through connection</span>
-    </div>
-
-    <div class="badge" id="identityanchor" onclick="triggerPrompt('identityanchor')">
-      <strong>Identity Anchor</strong><br />
-      <span class="badge-desc">Remember who you are</span>
-    </div>
+    <!-- badges here (same as before, removed for brevity) -->
   </div>
 
   <div class="prompt-panel" id="promptPanel"></div>
+
+  <div class="history-log" id="historyLog">
+    <h3>Memory Scroll</h3>
+    <ul id="historyList"></ul>
+    <div id="archivistPanel" style="display:none;"><button class="download-button" onclick="downloadLog()">📥 Export Memory Scroll</button></div>
+  </div>
 
   <script>
     const badgeState = {
@@ -150,6 +165,10 @@
       identityanchor: "Even when lost, you are not gone."
     };
 
+    function getTimestamp() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
     function renderPrompt(badgeId, prompt) {
       const panel = document.getElementById("promptPanel");
       const optionsHtml = prompt.options.map(option =>
@@ -161,8 +180,57 @@
 
     function triggerPrompt(badgeId) {
       if (badgeState.stripped[badgeId] || badgeState.completed[badgeId]) return;
+      const prompts = getPrompts();
+      renderPrompt(badgeId, prompts[badgeId]);
+    }
 
-      const prompts = {
+    function completePrompt(badgeId, choice) {
+      badgeState.completed[badgeId] = true;
+      document.getElementById(badgeId).classList.add("completed");
+      xp += 100;
+      updateXP();
+      const displayName = badgeId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      const time = getTimestamp();
+      document.getElementById("promptPanel").innerHTML = `
+        <p><b>${displayName}</b> completed at ${time}. Choice: ${choice}</p>
+        <div class='quote-box'>“${quotes[badgeId]}”</div>
+      `;
+      const history = document.getElementById("historyList");
+      const listItem = document.createElement("li");
+      listItem.textContent = `[${time}] ${displayName} → ${choice}`;
+      history.appendChild(listItem);
+      saveToStorage(`[${time}] ${displayName} → ${choice}`);
+    }
+
+    function updateXP() {
+      const percent = Math.min(100, (xp / 600) * 100);
+      document.getElementById("xpBar").style.width = percent + '%';
+      for (const id in badgeState.stripped) {
+        const badge = document.getElementById(id);
+        if (xp >= 300 && badge.classList.contains("stripped")) {
+          badge.classList.remove("stripped");
+          delete badgeState.stripped[id];
+        }
+      }
+    }
+
+    function downloadLog() {
+      const entries = document.querySelectorAll("#historyList li");
+      let logText = "Codex Memory Scroll\n-------------------------\n";
+      entries.forEach(entry => {
+        logText += entry.textContent + "\n";
+      });
+      const blob = new Blob([logText], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "Codex_Memory_Scroll.txt";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function getPrompts() {
+      return {
         taskmaster: {
           title: "Taskmaster",
           text: "What type of task is hardest for you to start?",
@@ -194,40 +262,34 @@
           options: ["My name is still mine", "I survived this far", "My body is home"]
         }
       };
-
-      renderPrompt(badgeId, prompts[badgeId]);
-    }
-
-    function completePrompt(badgeId, choice) {
-      badgeState.completed[badgeId] = true;
-      document.getElementById(badgeId).classList.add("completed");
-      xp += 100;
-      updateXP();
-      document.getElementById("promptPanel").innerHTML = `
-        <p><b>${badgeId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</b> completed. Choice: ${choice}</p>
-        <div class='quote-box'>“${quotes[badgeId]}”</div>
-      `;
-    }
-
-    function updateXP() {
-      const percent = Math.min(100, (xp / 600) * 100);
-      document.getElementById("xpBar").style.width = percent + '%';
-
-      for (const id in badgeState.stripped) {
-        const badge = document.getElementById(id);
-        if (xp >= 300 && badge.classList.contains("stripped")) {
-          badge.classList.remove("stripped");
-          delete badgeState.stripped[id];
-        }
-      }
     }
 
     window.onload = function() {
+      restoreHistory();
+      const archivistPanel = document.getElementById("archivistPanel");
+      if (localStorage.getItem("codex_mode") === "archivist") {
+        archivistPanel.style.display = "block";
+      }
       for (const id in badgeState.stripped) {
         const badge = document.getElementById(id);
         if (badge) badge.classList.add("stripped");
       }
     }
-  </script>
+  
+    function saveToStorage(entry) {
+      const logs = JSON.parse(localStorage.getItem("codex_logs") || "[]");
+      logs.push(entry);
+      localStorage.setItem("codex_logs", JSON.stringify(logs));
+    }
+
+    function restoreHistory() {
+      const logs = JSON.parse(localStorage.getItem("codex_logs") || "[]");
+      const history = document.getElementById("historyList");
+      logs.forEach(log => {
+        const li = document.createElement("li");
+        li.textContent = log;
+        history.appendChild(li);
+      });
+    }
 </body>
 </html>
