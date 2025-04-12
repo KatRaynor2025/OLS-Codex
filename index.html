@@ -11,13 +11,11 @@
       margin: 0;
       padding: 20px;
     }
-
     h1 {
       text-align: center;
       font-size: 1.8rem;
       margin-bottom: 20px;
     }
-
     .xp-bar-container {
       width: 100%;
       height: 24px;
@@ -26,29 +24,18 @@
       overflow: hidden;
       margin-bottom: 30px;
     }
-
     .xp-bar-fill {
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, #6eaaff, #5cd3b4);
       transition: width 0.5s ease-in-out;
     }
-
     .badge-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 16px;
       margin-bottom: 40px;
     }
-
-    .prompt-panel {
-      background: #111827;
-      border: 1px solid #6eaaff;
-      border-radius: 8px;
-      padding: 20px;
-      display: none;
-    }
-
     .badge {
       background: #1f2937;
       border: 2px solid #374151;
@@ -58,15 +45,33 @@
       cursor: pointer;
       transition: transform 0.2s ease;
     }
-
     .badge:hover {
       transform: scale(1.05);
       border-color: #6eaaff;
     }
-
     .badge-desc {
       color: #9ca3af;
       font-size: 0.75em;
+    }
+    .prompt-panel {
+      background: #111827;
+      border: 1px solid #6eaaff;
+      border-radius: 8px;
+      padding: 20px;
+      display: none;
+    }
+    .choice-button {
+      margin: 10px 0;
+      padding: 8px 14px;
+      background: #1f5f8b;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-family: monospace;
+      cursor: pointer;
+    }
+    .choice-button:hover {
+      background: #2980b9;
     }
   </style>
 </head>
@@ -94,18 +99,52 @@
     </div>
   </div>
 
-  <div class="prompt-panel" id="promptPanel">
-    <!-- Prompt content will be injected here -->
-  </div>
+  <div class="prompt-panel" id="promptPanel"></div>
 
   <script>
+    let completed = {};
+    let xp = 0;
+
     function triggerPrompt(badgeId) {
-      const promptPanel = document.getElementById("promptPanel");
-      promptPanel.innerHTML = `
-        <h2>${badgeId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h2>
-        <p>Prompt logic will go here.</p>
-      `;
-      promptPanel.style.display = "block";
+      if (completed[badgeId]) return;
+
+      const prompts = {
+        taskmaster: {
+          title: "Taskmaster",
+          text: "What type of task is hardest for you to start?",
+          options: ["Emotional labor", "Physical chores", "Appointments"]
+        },
+        dustbuster: {
+          title: "Dustbuster",
+          text: "What kind of sensory reset helps you most?",
+          options: ["Silence", "Smells", "Textures"]
+        },
+        feralmerge: {
+          title: "Feral Merge",
+          text: "What does your instinct usually try to protect?",
+          options: ["The body", "A younger voice", "A secret"]
+        }
+      };
+
+      const prompt = prompts[badgeId];
+      const panel = document.getElementById("promptPanel");
+      panel.innerHTML = `<h2>${prompt.title}</h2><p>${prompt.text}</p>` +
+        prompt.options.map(option =>
+          `<button class='choice-button' onclick="completePrompt('${badgeId}', '${option}')">${option}</button>`
+        ).join('');
+      panel.style.display = "block";
+    }
+
+    function completePrompt(badgeId, choice) {
+      completed[badgeId] = true;
+      xp += 100;
+      updateXP();
+      document.getElementById("promptPanel").innerHTML = `<p><b>${badgeId}</b> completed. Choice: ${choice}</p>`;
+    }
+
+    function updateXP() {
+      const percent = Math.min(100, (xp / 300) * 100);
+      document.getElementById("xpBar").style.width = percent + '%';
     }
   </script>
 </body>
