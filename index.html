@@ -249,9 +249,26 @@
     }
 
     window.onload = function () {
-      // 🧭 Phase 14: OLS Bridge Activation
-      
+      restoreHistory();
+      if (localStorage.getItem("codex_mode") === "archivist") {
+        document.getElementById("archivistPanel").style.display = "block";
       }
+      // 🧭 Phase 14: OLS Bridge Activation (moved to after DOM load)
+      if (localStorage.getItem("ols_shadowtransfer") === "pending") {
+        const badge = document.getElementById("shadowtransfer");
+        if (badge) badge.classList.add("upgraded");
+      }
+      if (localStorage.getItem("ols_powergrid") === "active") {
+        ["soothingspike", "lightslayer"].forEach(id => {
+          const badge = document.getElementById(id);
+          if (badge) badge.classList.add("upgraded");
+        });
+      }
+      for (const id in badgeState.stripped) {
+        const el = document.getElementById(id);
+        if (el) el.classList.add("stripped");
+      }
+    };
       restoreHistory();
       if (localStorage.getItem("codex_mode") === "archivist") {
         document.getElementById("archivistPanel").style.display = "block";
